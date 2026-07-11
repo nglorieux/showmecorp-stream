@@ -1,0 +1,764 @@
+{
+    "name": "eSDR",
+    "namespace": "com.exfo.avro",
+    "doc": "eSDR input schema / Version 1.0.0.5",
+    "type": "record",
+    "fields": [
+        {
+            "name": "timestamp_utc",
+            "doc": "Timestamp of the xDR sending date by the probe (in seconds)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "timestamp_utc_ns",
+            "doc": "Nanoseconds offset for timestamp of the xDR sending date by the probe",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "timestamp_tz_cor",
+            "doc": "Time-zone correction of xDR sending (in minutes)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "timestamp_dst_cor",
+            "doc": "Daylight saving time correction of xDR sending (in seconds)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "source",
+            "doc": "Processing Unit and Processing Pipeline Identifier(syntax: PU_ID *N + PP_ID, where N is the factor, set within PP)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "data_type",
+            "doc": "Data type (17 for Scalable UP)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "interface",
+            "doc": "Type of interface (can be eSDR id, VideoDR id...)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "start_date_utc",
+            "doc": "Start date in second of the first packet of the session related to IP address couple user-cdnname. (nb of seconds since 1/1/1970)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "start_date_utc_ns",
+            "doc": "Start date, number of nanoseconds since the last second",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "end_date_utc",
+            "doc": "End date in second of the last session related to IP address couple user-cdnname (nb of seconds since 1/1/1970)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "end_date_utc_ns",
+            "doc": "End date, number of nanoseconds since the last second",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "session_duration",
+            "doc": "Duration of the session in milliseconds",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "imsi",
+            "doc": "International Mobile Subscriber Identity (0 if unavailable)",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "imei",
+            "doc": "International Mobile Equipment Identity (0 if unavailable)",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "svn",
+            "doc": "Software Version Number",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "msisdn",
+            "doc": "MS International PSTN / ISDN Number of mobile",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "first_interface",
+            "doc": "First interface |Possible values: (* value not applicable)|   0: Unknown|   1: S1-U interface|   2: S4-U interface|   3: Gn-U interface|   4: S12-U interface (*)|   5: Gp-U interface (*)|   6: S5-U or S8-U interface|   7: S2b-U interface (*)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "last_interface",
+            "doc": "Last interface|Possible values: (* value not applicable)|   0: Unknown|   1: S1-U interface|   2: S4-U interface|   3: Gn-U interface|   4: S12-U interface (*)|   5: Gp-U interface (*)|   6: S5-U or S8-U interface|   7: S2b-U interface (*)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "first_mcc",
+            "doc": "Mobile Country Code at the beginning of xDR",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "last_mcc",
+            "doc": "Mobile Country Code at the end of xDR",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "first_mnc",
+            "doc": "Mobile Network Code at the beginning of xDR",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "last_mnc",
+            "doc": "Mobile Network Code at the end of xDR",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "first_rat",
+            "doc": "Radio Access Technology at the end of the session|Possible values :  (* value not applicable)|   0: UTRAN|   1: GERAN|   2: WLAN (*)|   3: GAN (*)|   4: HSPA EVOLUTION (*)|   5: EUTRAN|   6: VIRTUAL (*)|   'empty': unknown RAT type",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "last_rat",
+            "doc": "Radio Access Technology at the end of the session|Possible values : (* value not applicable)|   0: UTRAN|   1: GERAN|   2: WLAN (*)|   3: GAN (*)|   4: HSPA EVOLUTION (*)|   5: EUTRAN|   6: VIRTUAL (*)|   'empty': unknown RAT type",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "first_location",
+            "doc": "Identifier of the first location of the Data Record.|2G: Coded with RAT/MCC/MNC/LAC/CellId|3G: Coded with RAT/MCC/MNC/LAC/SAC|4G: Coded with RAT/MCC/MNC/eNodeId/CellId",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "last_location",
+            "doc": "Identifier of the last location of the Data Record.|2G: Coded with RAT/MCC/MNC/LAC/CellId|3G: Coded with RAT/MCC/MNC/LAC/SAC|4G: Coded with RAT/MCC/MNC/eNodeId/CellId",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "first_src_node_ip",
+            "doc": "Source Node IP address\u00a0(ie RNC or SGSN or eNodeB or SGW) at the beginning of eSDR",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "first_dest_node_ip",
+            "doc": "Destination Node IP address\u00a0(ie GGSN or SGW or PGW) at the beginning of eSDR",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "last_src_node_ip",
+            "doc": "Source Node IP address\u00a0(ie RNC or SGSN or eNodeB or SGW) at the end of eSDR",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "last_dest_node_ip",
+            "doc": "Destination Node IP address\u00a0(ie GGSN or SGW or PGW) at the end of eSDR",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "user_ip",
+            "doc": "IP address allocated to the device for the end user",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "server_ip",
+            "doc": "IP address of the application server(Most volumetric stream)",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "dnsserver_ip",
+            "doc": "IP address of the DNS server",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "apn",
+            "doc": "Access Point Name",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "protocol",
+            "doc": "Protocol of the most volumetric stream aggregated in the eSDR.",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "protocol_attribute",
+            "doc": "Protocol attribute of the most volumetric stream aggregated in the eSDR.",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "application",
+            "doc": "Application",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "application_attribute",
+            "doc": "Application attribute of the most volumetric stream aggregated in the eSDR.",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "category",
+            "doc": "Category of the flows",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "hostname",
+            "doc": "Hostname of the server (Most volumetric stream)",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "tethering_detected",
+            "doc": "Detected tethering",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "packets_ul",
+            "doc": "Number of packets in uplink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "packets_dl",
+            "doc": "Number of packets in downlink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "volumel3_ul",
+            "doc": "IP volume in bytes in uplink (include IP header)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "volumel3_dl",
+            "doc": "IP volume in bytes in downlink (include IP header)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "volumel4_tcp_ul",
+            "doc": "Acknowledged TCP volume in bytes in uplink (without TCP header)(does not include the retransmitted volume)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "volumel4_tcp_dl",
+            "doc": "Acknowledged TCP volume in bytes in downlink (without TCP header)(does not include the retransmitted volume)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "volumel4_udp_ul",
+            "doc": "UDP volume in bytes in uplink (without UDP header)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "volumel4_udp_dl",
+            "doc": "UDP volume in bytes in downlink (without UDP header)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "activitydurationl4_ul",
+            "doc": "Duration in milliseconds of the payload activity in uplink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "activitydurationl4_dl",
+            "doc": "Duration in milliseconds of the payload activity in downlink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "range0_ul_duration",
+            "doc": "Total Number of milliseconds when the uplink throughput is lower than the threshold_U1  - 10Kbps",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "range1_ul_duration",
+            "doc": "Total Number of milliseconds when the uplink throughput is higher than the threshold U1 -10Kbps and lower than than the threshold U2 - 50Kbps",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "range2_ul_duration",
+            "doc": "Total Number of milliseconds when the uplink throughput is higher than the threshold U2 - 50Kbps and lower than than the threshold U3 - 300Kbps",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "range3_ul_duration",
+            "doc": "Total Number of milliseconds when the uplink throughput is higher than the threshold U3 - 300Kbps",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "range0_dl_duration",
+            "doc": "Total Number of milliseconds when the downlink throughput is lower than the threshold D1 - 50 Kbps",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "range1_dl_duration",
+            "doc": "Total Number of milliseconds when the downlink throughput is higher than the threshold D1 - 50 Kbps and lower than than the threshold D2 - 250Kbps",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "range2_dl_duration",
+            "doc": "Total Number of milliseconds when the downlink throughput is higher than the threshold D2 250 Kbps and lower than than the threshold D3 - 1 Mbps",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "range3_dl_duration",
+            "doc": "Total Number of milliseconds when the downlink throughput is higher than the threshold D3 - 1Mbps",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "throughput_peakl4_ul",
+            "doc": "Peak throughput in kbps in uplink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "throughput_peakl4_dl",
+            "doc": "Peak throughput in kbps in downlink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "retrans_volumel4_ul",
+            "doc": "Retransmitted TCP payload volume in bytes in uplink (without TCP header)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "retrans_volumel4_dl",
+            "doc": "Retransmitted TCP payload volume in bytes in downlink (without TCP header)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "first_byte_delay",
+            "doc": "Time to first byte (ms). From DNS query response to first received bytes.|In absence of DNS, TCP-SYN(SSL)/CHLO(QUIC) to First received bytes.",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "dns_response_time",
+            "doc": "Time between the first DNS query and response (ms)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "dns_response_code",
+            "doc": "Response code of the first DNS query",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "client_rtt",
+            "doc": "RTT downlink in milliseconds between the server and the user",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "server_rtt",
+            "doc": "RTT uplink in milliseconds between user and the server",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "tcp_session_nb",
+            "doc": "Number of TCP sessions",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "tcp_estab_session_nb",
+            "doc": "Number of established TCP sessions. Complete SYN SYN-ACK ACK sequence",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "udp_session_nb",
+            "doc": "Number of  UDP sessions or other",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "syn_ul_nb",
+            "doc": "Number of TCP SYN in uplink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "rst_nb",
+            "doc": "Number of TCP RST",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "tcp_reset_terminated_session_nb",
+            "doc": "Number of TCP session terminated with TCP RST|(P.N. The First Reset packet detected(UL/DL) over a TCP stream will be considered as a TCP session terminated counter)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "user_agent",
+            "doc": "User agent from the first clear HTTP message",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },        
+        {
+            "name": "advertisement_id",
+            "doc": "Advertisement Id from the first clear HTTP message",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        },
+        {
+            "name": "arp",
+            "doc": "Allocation and Retention Priority",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "qos_id",
+            "doc": "QOS Class Identifier",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "gbr_ul",
+            "doc": "Guaranteed Bit Rate Uplink(in kbps)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "gbr_dl",
+            "doc": "Guaranteed Bit Rate Downlink(in kbps)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "mbr_ul",
+            "doc": "Maximum Bit Rate Uplink(in kbps)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "mbr_dl",
+            "doc": "Maximum Bit Rate Downlink(in kbps)",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "throughput_transferl4_ul",
+            "doc": "Transfer throughput in kbps in uplink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        },
+        {
+            "name": "throughput_transferl4_dl",
+            "doc": "Transfer throughput in kbps in downlink",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": null
+        }
+    ]
+}

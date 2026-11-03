@@ -1,1 +1,0 @@
-run mvn package in terminal to build product

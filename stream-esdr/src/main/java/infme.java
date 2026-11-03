@@ -36,6 +36,9 @@ public class infme {
     public static void main(String[] args) throws Exception {
         String truststorepassword = null;
         String truststorelocation = null;
+        String groupid = "up-sme-temp";
+        String topic = "ast_xdr_up";
+        String locationfolder = "hdfs:///data/showme/hive/foundation_layer_hive.db/esdr/";
         SparkConf conf = (new SparkConf()).setAppName("AMR-kafka-sandbox");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(10000L));
@@ -55,8 +58,18 @@ public class infme {
                         truststorelocation = parts[1];
                     }
                 }
+                else if (args[i].startsWith("groupid=")) {
+                    groupid = args[i].substring("groupid=".length());
+                }
+                else if (args[i].startsWith("topic=")) {
+                    topic = args[i].substring("topic=".length());
+                }
+                else if (args[i].startsWith("locationfolder=")) {
+                    locationfolder = args[i].substring("locationfolder=".length());
+                }
             }
         }
+        final String outputLocationFolder = locationfolder;
 
         Map<String, Object> kafkaParams = new HashMap<>();
         kafkaParams.put("bootstrap.servers",
@@ -71,7 +84,7 @@ public class infme {
             kafkaParams.put("ssl.truststore.password", truststorepassword);
         }
         kafkaParams.put("auto.offset.reset", "latest");
-        kafkaParams.put("group.id", "up_tst_ast_xdr_shm");
+        kafkaParams.put("group.id", groupid);
         kafkaParams.put("enable.auto.commit", "false");
         kafkaParams.put("auto.commit.interval.ms", "1000");
         kafkaParams.put("session.timeout.ms", "30000");
@@ -83,7 +96,7 @@ public class infme {
         kafkaParams.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         kafkaParams.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         kafkaParams.put("client.id", "showme_usr@corp.mtc.com.kw");
-        Collection<String> topics = Arrays.asList("up");
+        Collection<String> topics = Arrays.asList(topic);
         JavaInputDStream<ConsumerRecord<String, byte[]>> stream = KafkaUtils.createDirectStream(ssc,
                 LocationStrategies.PreferConsistent(), ConsumerStrategies.Subscribe(topics, kafkaParams));
 
@@ -110,7 +123,7 @@ public class infme {
                     });
 
                     // ✅ Step 3: Save result
-                    String location = buildOutputPath(); // your timestamp-based logic
+                    String location = buildOutputPath(outputLocationFolder);
                     processedRDD.saveAsTextFile(location);
 
                     // ✅ Step 4: Commit offsets after successful processing
@@ -129,7 +142,7 @@ public class infme {
         ssc.awaitTermination();
     }
 
-    private static String buildOutputPath()
+    private static String buildOutputPath(String locationfolder)
     {
         LocalDateTime now = LocalDateTime.now();
         String year = Integer.toString(now.getYear());
@@ -139,8 +152,9 @@ public class infme {
         String minute = Integer.toString(now.getMinute());
         String second = Integer.toString(now.getSecond());
         String millis = Integer.toString(now.get(ChronoField.MILLI_OF_SECOND));
-        String location = "hdfs:///data/showme/hive/foundation_layer_hive.db/esdr/date_hour=" + year + month + day
-                + hour + "/" + minute + "-" + second + "-" + millis;
+        String locationPrefix = locationfolder.endsWith("/") ? locationfolder : locationfolder + "/";
+        String location = locationPrefix + "date_hour=" + year + month + day + hour + "/" + minute + "-" + second
+                + "-" + millis;
         return location;
     }
     private static String convertAvroValue(byte[] payload) {

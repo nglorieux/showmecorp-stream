@@ -8,7 +8,10 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.streaming.Duration;
-import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.streaming.kafka010.CanCommitOffsets;
+import org.apache.spark.streaming.kafka010.HasOffsetRanges;
+import org.apache.spark.streaming.kafka010.OffsetRange;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka010.ConsumerStrategies;
@@ -40,7 +43,7 @@ public class infme {
     // the index of the columns that we need to consume from each record
     public static void main(String[] args) throws Exception{
         // adding the index of required columns in array index
-        String password = "c10ud3Ra";
+        String password = null;
         SparkConf conf = new SparkConf().setAppName("AMR-kafka-sandbox");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaStreamingContext ssc = new JavaStreamingContext(sc,new Duration (10000));
@@ -49,9 +52,9 @@ public class infme {
             System.out.println("argument="+args[0]);
             for (int i = 0; i < args.length; i++)
             {
-                if (args[i].startsWith("trustorepwd"))
-                {
-                    password = args[i].split("=")[1];
+                // "trustorepwd" is the old spelling, kept so existing launch scripts still work
+                if (args[i].startsWith("truststorepwd=") || args[i].startsWith("trustorepwd=")) {
+                    password = args[i].split("=", 2)[1];
                 }
             }
         }
@@ -62,8 +65,10 @@ public class infme {
         kafkaParams.put("security.protocol", "PLAINTEXT");
         kafkaParams.put("sasl.kerberos.service.name", "kafka");
         kafkaParams.put("sasl.mechanism", "GSSAPI");
-        kafkaParams.put("ssl.truststore.location", " /opt/cloudera/security/keystore/truststore.jks");
-        kafkaParams.put("ssl.truststore.password", password);
+        kafkaParams.put("ssl.truststore.location", "/opt/cloudera/security/keystore/truststore.jks");
+        if (password != null) {
+            kafkaParams.put("ssl.truststore.password", password);
+        }
         kafkaParams.put("auto.offset.reset", "latest");
         kafkaParams.put("group.id", "exfo.consumer.esdr");
         kafkaParams.put("enable.auto.commit", "false");
@@ -83,15 +88,16 @@ public class infme {
         //stream.print();
 
         // subscribe to topic and create a direct stream
-        JavaDStream<String> lines= stream.map(x-> convertAvroValue(x.value())+","+Long.toString(x.offset())+","+Long.toString(x.partition()));
+        stream.foreachRDD(rdd -> {
+            OffsetRange[] offsetRanges = ((HasOffsetRanges) rdd.rdd()).offsetRanges();
+            JavaRDD<String> lines= rdd.map(x-> convertAvroValue(x.value())+","+Long.toString(x.offset())+","+Long.toString(x.partition()));
         //lines.print();
         // extracting value , offset and partition for each consumed message and adding offset and partition to the CSV message in the end of the value
-        JavaDStream<String> linesnn=lines.map(x -> x.split(",")[0]+","+x.split(",")[1]+","+x.split(",")[2]+","+x.split(",")[3]+","+x.split(",")[4]+","+x.split(",")[5] +","+x.split(",")[6]+","+x.split(",")[7]+","+x.split(",")[8]+","+x.split(",")[9]+","+x.split(",")[10]+","+x.split(",")[11]+","+x.split(",")[12]+","+x.split(",")[13]+","+x.split(",")[14]+","+x.split(",")[15]+","+x.split(",")[17]+","+x.split(",")[18]+","+x.split(",")[16]);
+        JavaRDD<String> linesnn=lines.map(x -> x.split(",")[0]+","+x.split(",")[1]+","+x.split(",")[2]+","+x.split(",")[3]+","+x.split(",")[4]+","+x.split(",")[5] +","+x.split(",")[6]+","+x.split(",")[7]+","+x.split(",")[8]+","+x.split(",")[9]+","+x.split(",")[10]+","+x.split(",")[11]+","+x.split(",")[12]+","+x.split(",")[13]+","+x.split(",")[14]+","+x.split(",")[15]+","+x.split(",")[17]+","+x.split(",")[18]+","+x.split(",")[16]);
         //linesnn.print();
         // extracting desired columns only by using previously specified index and concatenating the by comma to be the output
         // as follow value1,value2,.....,offset,partition
-        linesnn.foreachRDD(x -> {
-            x.repartition(1) ;
+            JavaRDD<String> x = linesnn;
             LocalDateTime now = LocalDateTime.now();
             String year = Integer.toString(now.getYear());
             String month = (now.getMonthValue()<10?"0":"")+Integer.toString(now.getMonthValue());
@@ -101,9 +107,11 @@ public class infme {
             String second = Integer.toString(now.getSecond());
             String millis = Integer.toString(now.get(ChronoField.MILLI_OF_SECOND));
 
-            String location = " hdfs:///data/showme/hive/foundation_layer_hive.db/esdr/date_hour="+year+month+day+hour+"/"+minute+"-"+second+"-"+millis;
+            String location = "hdfs:///data/showme/hive/foundation_layer_hive.db/esdr/date_hour="+year+month+day+hour+"/"+minute+"-"+second+"-"+millis;
             String y=x.name();
             x.saveAsTextFile(location);
+            // Save the Kafka position only after the batch is written
+            ((CanCommitOffsets) stream.inputDStream()).commitAsync(offsetRanges);
             //writing the consumed batch into HDFS in the following directory /data/sandbox/sandbox_nxn.hive.db/cem_table_year_month_day_hour/minute-second-millis.tx according to writing time timestamp
 
 // aggiunto io 22/02/2021			/data/showme/spark_sql/nxn_test/cem_table_"+year+"_"+month+"_"+day+"_"+hour+"/"+minute+"-"+second+"-"+millis+".txt"

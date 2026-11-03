@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaNormalization;
 import org.apache.avro.generic.GenericDatumReader;
@@ -28,10 +27,6 @@ import org.apache.spark.streaming.kafka010.*;
 
 public class infme {
     private static DatumReader<GenericRecord> datumReader;
-
-    public static String ByteArrayToString(byte[] ba) {
-        return DatatypeConverter.printHexBinary(ba);
-    }
 
     public static void main(String[] args) throws Exception {
         String truststorepassword = null;

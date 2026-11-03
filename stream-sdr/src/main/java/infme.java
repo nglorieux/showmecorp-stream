@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaNormalization;
 import org.apache.avro.generic.GenericDatumReader;
@@ -22,7 +21,10 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.streaming.Duration;
-import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.streaming.kafka010.CanCommitOffsets;
+import org.apache.spark.streaming.kafka010.HasOffsetRanges;
+import org.apache.spark.streaming.kafka010.OffsetRange;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka010.ConsumerStrategies;
@@ -34,12 +36,8 @@ public class infme {
     private static DatumReader<GenericRecord> datumReader;
     private static String schemaHashString;
 
-    public static String ByteArrayToString(byte[] ba) {
-        return DatatypeConverter.printHexBinary(ba);
-    }
-
     public static void main(String[] args) throws Exception {
-        String password = "c10ud3Ra";
+        String password = null;
         SparkConf conf = (new SparkConf()).setAppName("AMR-kafka-sandbox");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(10000L));
@@ -47,8 +45,9 @@ public class infme {
             System.out.println("argument=" + args[0]);
 
             for (int i = 0; i < args.length; ++i) {
-                if (args[i].startsWith("trustorepwd")) {
-                    password = args[i].split("=")[1];
+                // "trustorepwd" is the old spelling, kept so existing launch scripts still work
+                if (args[i].startsWith("truststorepwd=") || args[i].startsWith("trustorepwd=")) {
+                    password = args[i].split("=", 2)[1];
                 }
             }
         }
@@ -60,7 +59,9 @@ public class infme {
         kafkaParams.put("security.protocol", "SASL_SSL");
         kafkaParams.put("sasl.mechanism", "GSSAPI");
         kafkaParams.put("ssl.truststore.location", "/opt/cloudera/security/keystore/truststore.jks");
-        kafkaParams.put("ssl.truststore.password", password);
+        if (password != null) {
+            kafkaParams.put("ssl.truststore.password", password);
+        }
         kafkaParams.put("auto.offset.reset", "latest");
         kafkaParams.put("group.id", "up_tst_ast_xdr_shm");
         kafkaParams.put("enable.auto.commit", "false");
@@ -77,11 +78,13 @@ public class infme {
         Collection<String> topics = Arrays.asList("up");
         JavaInputDStream<ConsumerRecord<String, byte[]>> stream = KafkaUtils.createDirectStream(ssc,
                 LocationStrategies.PreferConsistent(), ConsumerStrategies.Subscribe(topics, kafkaParams));
-        JavaDStream<String> lines = stream.map((x) -> {
+        stream.foreachRDD((rdd) -> {
+            OffsetRange[] offsetRanges = ((HasOffsetRanges) rdd.rdd()).offsetRanges();
+            JavaRDD<String> lines = rdd.map((x) -> {
             return convertAvroValue((byte[]) x.value()) + "," + Long.toString(x.offset()) + ","
                     + Long.toString((long) x.partition());
         });
-        JavaDStream<String> linesnn = lines.map((x) -> {
+        JavaRDD<String> linesnn = lines.map((x) -> {
             return x.split(",")[0] + "," + x.split(",")[1] + "," + x.split(",")[2] + "," + x.split(",")[3] + ","
                     + x.split(",")[4] + "," + x.split(",")[5] + "," + x.split(",")[6] + "," + x.split(",")[7] + ","
                     + x.split(",")[8] + "," + x.split(",")[9] + "," + x.split(",")[10] + "," + x.split(",")[11] + ","
@@ -91,8 +94,7 @@ public class infme {
                     + x.split(",")[17] + "," + x.split(",")[23] + "," + x.split(",")[24] + "," + x.split(",")[25] + ","
                     + x.split(",")[26];
         });
-        linesnn.foreachRDD((x) -> {
-            x.repartition(1);
+            JavaRDD<String> x = linesnn;
             LocalDateTime now = LocalDateTime.now();
             String year = Integer.toString(now.getYear());
             String month = (now.getMonthValue() < 10 ? "0" : "") + Integer.toString(now.getMonthValue());
@@ -105,6 +107,8 @@ public class infme {
                     + hour + "/" + minute + "-" + second + "-" + millis;
             String y = x.name();
             x.saveAsTextFile(location);
+            // Save the Kafka position only after the batch is written
+            ((CanCommitOffsets) stream.inputDStream()).commitAsync(offsetRanges);
         });
         ssc.start();
         ssc.awaitTermination();
